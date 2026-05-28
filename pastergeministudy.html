@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<title>목회자를 위한 Google Gemini &amp; NotebookLM 실전 교재 (단일판)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+/* ═══ 모든 폰트 사이즈 이전 버전 +1pt ═══ */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Malgun Gothic','맑은 고딕',sans-serif;font-size:12pt;line-height:1.88;color:#1A1A1A;background:#FAFAFA}
+#book{width:210mm;max-width:100%;margin:0 auto;background:#fff;box-shadow:0 0 30px rgba(0,0,0,0.1);padding:0}
+@media (min-width:1100px){
+  body{padding-left:300px}
+  #book{margin:0 auto}
+}
+
+/* ── 사이드바 ── */
+#sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:#0D1B6E;color:#fff;overflow-y:auto;z-index:100;padding:0 0 40px 0}
+#sidebar h2{background:#0D1B6E;color:#FFD600;padding:18px 20px;font-size:13pt;border-bottom:2px solid #FFD600;letter-spacing:1px}
+#sidebar h2 small{display:block;font-size:9.5pt;color:#FFE082;font-weight:normal;margin-top:4px;letter-spacing:0}
+#sidebar ul{list-style:none}
+#sidebar ul li a{display:block;padding:8px 20px 8px 26px;color:#E1F5FE;text-decoration:none;font-size:11pt;border-left:4px solid transparent;transition:all 0.2s}
+#sidebar ul li a:hover,#sidebar ul li a.active{color:#FFD600;background:rgba(255,255,255,0.08);border-left-color:#FFD600}
+#sidebar ul li.sh>a{color:#FFD600;font-weight:bold;font-size:12pt;padding-top:14px;letter-spacing:0.5px}
+#sidebar .author-info{padding:18px 20px;font-size:10pt;color:#B3E5FC;border-top:1px solid rgba(255,255,255,0.15);margin-top:12px;line-height:1.6}
+#sidebar .author-info b{color:#FFD600}
+#mobile-toggle{display:none;position:fixed;top:14px;left:14px;z-index:200;background:#0D1B6E;color:#FFD600;border:none;padding:10px 14px;border-radius:5px;font-weight:bold;cursor:pointer;font-size:11pt;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+@media (max-width:1099px){
+  #sidebar{transform:translateX(-100%);transition:transform 0.3s;width:260px}
+  #sidebar.open{transform:translateX(0)}
+  #mobile-toggle{display:block}
+}
+
+/* ── 표지 ── */
+.cover{width:210mm;height:297mm;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;
+  background:linear-gradient(160deg,#0D1B6E 0%,#1565C0 50%,#0288D1 100%);
+  color:#fff;text-align:left;padding:50px 40px;page-break-after:always}
+.cover-logo-top{font-size:12pt;font-weight:700;color:#FFD600;letter-spacing:2px;margin-bottom:60px;opacity:.9}
+.cover h1{font-size:21pt;font-weight:700;opacity:.92;margin-bottom:8px;letter-spacing:1px}
+.cover h2{font-size:35pt;font-weight:900;color:#FFD600;margin:12px 0;line-height:1.15;letter-spacing:-0.5px;text-shadow:2px 2px 8px rgba(0,0,0,.4)}
+.cover h3{font-size:18pt;font-weight:700;margin-bottom:24px;opacity:.95}
+.cover .sub{font-size:11.5pt;border:1.5px solid rgba(255,255,255,.45);padding:10px 28px;border-radius:24px;margin:16px 0;line-height:1.65;opacity:.92}
+.cover-divider{width:80px;height:3px;background:#FFD600;margin:30px 0}
+.cover-author{margin-top:8px;font-size:13pt;font-weight:700;color:#FFD600;letter-spacing:0.5px;text-shadow:1px 1px 4px rgba(0,0,0,.4)}
+.cover-author-sub{font-size:11pt;color:rgba(255,255,255,.85);margin-top:4px}
+.cover-bottom{margin-top:50px;font-size:10.5pt;opacity:.7;line-height:1.6}
+.cover-gs{font-size:12pt;font-weight:700;color:#FFD600;letter-spacing:1px}
+
+/* ── 목차 ── */
+.toc-page{page-break-after:always;padding:6mm 0}
+.toc-page>h1{font-size:23pt;color:#0D1B6E;text-align:left;border-bottom:3px solid #1565C0;padding-bottom:10px;margin-bottom:22px;letter-spacing:2px}
+.toc-part{font-size:12.5pt;font-weight:700;color:#0D1B6E;margin:16px 0 6px;border-left:5px solid #1565C0;padding:4px 10px;background:#EEF2FF}
+.toc-list{list-style:none}
+.toc-list li{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dotted #AAA;font-size:11.5pt}
+.toc-list li .title{flex:1;color:#1A1A1A}
+.toc-list li .pg{min-width:38px;text-align:right;font-weight:700;color:#1565C0;font-size:12pt}
+.toc-sub{padding-left:18px;font-size:11pt;color:#444}
+
+/* ── 챕터 ── */
+.chapter{page-break-before:always;padding-top:5mm}
+.chap-cover{border-bottom:4px solid #0D1B6E;margin-bottom:14px;padding-bottom:10px}
+.badge{display:inline-block;background:#0D1B6E;color:#FFD600;font-size:10pt;font-weight:700;padding:3px 14px;border-radius:12px;margin-bottom:7px;letter-spacing:0.5px}
+.badge.nlm{background:#4A148C;color:#E1BEE7}
+.chapter h1{font-size:19pt;color:#0D1B6E;line-height:1.3;font-weight:900}
+.chapter h1.nlm{color:#4A148C}
+
+/* ── 소절 ── */
+.section{margin-top:16px}
+.section h2{font-size:13.5pt;color:#fff;border-left:6px solid #1565C0;
+  padding:7px 14px;background:#1565C0;margin-bottom:12px;break-after:avoid;
+  font-weight:700;border-radius:0 5px 5px 0;letter-spacing:0.3px}
+.section h2.nlm{background:#6A1B9A;border-left-color:#4A148C}
+
+/* ── 본문 ── */
+p{margin:5px 0;text-align:justify;color:#1A1A1A}
+
+/* ── 상황 박스 ── */
+.scene{background:#F0F4F8;border-left:4px solid #546E7A;padding:9px 15px;margin:10px 0;font-size:11pt;break-inside:avoid;border-radius:0 5px 5px 0}
+.scene::before{content:"📋 상황: ";font-weight:700;color:#37474F;font-size:11pt}
+
+/* ── 프롬프트 박스 ── */
+.pb{background:#F0FFF0;border:2px solid #4CAF50;border-radius:6px;padding:11px 15px;margin:10px 0;break-inside:avoid}
+.pl{font-size:10.5pt;font-weight:700;color:#1B5E20;display:block;margin-bottom:5px}
+.pl::before{content:"✏️ "}
+.pt{font-family:'Courier New',monospace;font-size:10pt;color:#1B3A1F;white-space:pre-wrap;
+  background:#fff;padding:9px 13px;border-radius:4px;border:1.5px solid #81C784;line-height:1.72;font-weight:600}
+
+/* ── 응답 박스 ── */
+.rb{background:#E8F0FE;border:2px solid #4285F4;border-radius:6px;padding:11px 15px;margin:10px 0;break-inside:avoid}
+.rl{font-size:10.5pt;font-weight:700;color:#0D1B6E;display:block;margin-bottom:5px}
+.rl::before{content:"💬 "}
+.rt{font-size:10.5pt;color:#1A237E;white-space:pre-wrap;line-height:1.72;font-weight:500}
+
+/* ── 노트북LM 응답 ── */
+.nb{background:#F3E5F5;border:2px solid #9C27B0;border-radius:6px;padding:11px 15px;margin:10px 0;break-inside:avoid}
+.nl2{font-size:10.5pt;font-weight:700;color:#4A148C;display:block;margin-bottom:5px}
+.nl2::before{content:"📓 "}
+.nt{font-size:10.5pt;color:#4A148C;white-space:pre-wrap;line-height:1.72;font-weight:500}
+
+/* ── 팁·주의·실습 ── */
+.tip{background:#FFF8E1;border-left:4px solid #FF8F00;padding:8px 15px;margin:8px 0;font-size:11.5pt;break-inside:avoid;border-radius:0 5px 5px 0;color:#1A1A1A}
+.tip::before{content:"💡 Tip: ";font-weight:700;color:#E65100}
+.warn{background:#FFEBEE;border-left:4px solid #C62828;padding:8px 15px;margin:8px 0;font-size:11.5pt;break-inside:avoid;border-radius:0 5px 5px 0}
+.warn::before{content:"⚠️ 주의: ";font-weight:700;color:#B71C1C}
+.do{background:#E8F5E9;border-left:4px solid #2E7D32;padding:8px 15px;margin:8px 0;font-size:11.5pt;break-inside:avoid;border-radius:0 5px 5px 0}
+.do::before{content:"🎯 직접 해보기: ";font-weight:700;color:#1B5E20}
+
+/* ── 스텝 ── */
+.step{display:flex;align-items:flex-start;margin:7px 0 7px 8px}
+.sn{min-width:56px;font-weight:700;color:#fff;background:#4A148C;padding:2px 7px;border-radius:9px;font-size:9pt;margin-right:10px;margin-top:3px;white-space:nowrap}
+.sn.b{background:#1565C0}
+
+/* ── 라벨·리스트 ── */
+.lbl{font-weight:700;font-size:12pt;color:#0D1B6E;margin:13px 0 5px;border-bottom:2px solid #1565C0;padding-bottom:3px}
+.bl{list-style:none;padding-left:6px}
+.bl li{padding:3px 0 3px 18px;position:relative;font-size:11.5pt;color:#1A1A1A}
+.bl li::before{content:"▸";position:absolute;left:0;color:#1565C0;font-weight:700}
+.nl{padding-left:22px}
+.nl li{padding:3px 0;font-size:11.5pt;color:#1A1A1A}
+
+/* ── Part 2 구분 ── */
+.part-div{page-break-before:always;display:flex;align-items:flex-start;justify-content:flex-start;min-height:80mm;flex-direction:column;border:3px solid #4A148C;margin:10mm 0;border-radius:10px;background:#FAF0FF}
+.part-div h2{font-size:27pt;color:#4A148C;font-weight:900}
+.part-div p{font-size:14pt;color:#6A1B9A;margin-top:10px}
+
+/* ── 부록 ── */
+.app-h2{font-size:13pt;color:#fff;border-left:5px solid #546E7A;padding:6px 12px;background:#546E7A;margin:14px 0 8px;break-after:avoid;border-radius:0 5px 5px 0;font-weight:700}
+.app-box{border:1.5px solid #B0BEC5;border-radius:5px;padding:11px 15px;margin:6px 0;background:#FAFAFA}
+.cmd{display:inline-block;background:#546E7A;color:#fff;padding:1px 6px;border-radius:7px;font-size:9pt;margin-right:5px;font-weight:700}
+
+/* ── 마무리 ── */
+.closing{background:linear-gradient(135deg,#0D1B6E,#4A148C);color:#fff;text-align:center;padding:30px;border-radius:10px;margin-top:18mm}
+.closing h2{font-size:17pt;margin-bottom:10px;font-weight:900;letter-spacing:0.5px;color:#fff}
+.closing p{color:#fff !important}
+.closing p span,.closing b{color:#FFD600}
+
+hr.d{border:none;border-top:1.5px solid #CFD8DC;margin:14px 0}
+a{color:inherit;text-decoration:none}
+
+/* ── 화면 표시 최적화 (페이지 크기 통일) ── */
+.cover,.toc-page,.chapter,.part-div{
+  width:210mm;
+  min-height:297mm;
+  margin:0;
+}
+.cover{height:297mm;padding:50px 40px;page-break-after:auto}
+.toc-page,.chapter,.part-div{page-break-after:auto;page-break-before:auto;padding:6mm 8mm}
+.chapter{border-top:1px solid #DDD;scroll-margin-top:20px}
+.toc-list li a{color:#1565C0;text-decoration:none}
+.toc-list li a:hover{text-decoration:underline}
+
+/* ── 인쇄/PDF 모드 ── */
+@media print{
+  #sidebar,#mobile-toggle{display:none !important}
+  body{background:#fff}
+  #book{margin:0;width:210mm;box-shadow:none}
+  .cover{height:297mm;page-break-after:always;padding:50px 40px}
+  .toc-page{page-break-after:always;padding:6mm 0}
+  .chapter{page-break-before:always;padding-top:5mm;border-top:none}
+  .part-div{page-break-before:always}
+}
+
+/* ── 삽화 ── */
+.cover-art{margin:20px auto;width:120px;height:120px;display:block}
+.chap-banner{width:100%;height:55mm;object-fit:cover;border-radius:8px;margin-bottom:14px;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:block}
+.chap-icon{width:48px;height:48px;display:inline-block;vertical-align:middle;margin-right:14px}
+.chap-cover{display:flex;align-items:center;flex-wrap:wrap;border-bottom:4px solid #0D1B6E;margin-bottom:14px;padding-bottom:10px}
+.chap-cover .chap-text{flex:1;min-width:60%}
+.chap-cover.with-banner{display:block}
+.section-img{width:100%;height:35mm;object-fit:cover;border-radius:6px;margin:8px 0;box-shadow:0 2px 6px rgba(0,0,0,0.1)}
+.image-caption{font-size:10pt;color:#666;text-align:center;font-style:italic;margin-top:-6px;margin-bottom:10px}
+</style>
+</head><body>
+
+<button id="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰ 목차</button>
+
+<nav id="sidebar">
+  <h2>📖 목회자 AI 교재
+    <small>저자 오경근 박사<br>서일대학교 AI융합학과 교수</small>
+  </h2>
+  <ul>
+    <li class="sh"><a href="#cover">표지 / 목차</a></li>
+    <li><a href="#intro">서론 — 제미나이 첫걸음</a></li>
+    <li class="sh"><a href="#part1">📘 Part 1 — Gemini</a></li>
+    <li><a href="#ch1">제1장  성경 원어 연구</a></li>
+    <li><a href="#ch2">제2장  설교 준비</a></li>
+    <li><a href="#ch3">제3장  성경공부·소그룹</a></li>
+    <li><a href="#ch4">제4장  심방·상담</a></li>
+    <li><a href="#ch5">제5장  교회 행정</a></li>
+    <li><a href="#ch6">제6장  교회학교·청년부</a></li>
+    <li><a href="#ch7">제7장  SNS·홍보</a></li>
+    <li><a href="#ch8">제8장  고급 기술·모델</a></li>
+    <li class="sh"><a href="#part2">📓 Part 2 — NotebookLM</a></li>
+    <li><a href="#ch9">제9장  노트북LM 첫걸음</a></li>
+    <li><a href="#ch10">제10장  설교·성경 연구</a></li>
+    <li><a href="#ch11">제11장  문서 관리·분석</a></li>
+    <li><a href="#ch12">제12장  슬라이드·인포그래픽·오디오</a></li>
+    <li class="sh"><a href="#appendix">📎 부  록</a></li>
+  </ul>
+  <div class="author-info">
+    <b>저자: 오경근 박사</b><br>
+    서일대학교 AI융합학과 교수<br><br>
+    <b>요한복음 3:16</b><br>
+    <span style="font-size:9pt;color:#90CAF9;">goodseed AI 연구소 ⓒ 2026</span>
+  </div>
+</nav>
+
+<div id="book">
+
+<a id="cover"></a>
+<!-- 표지 -->
+<div class="cover">
+  <div class="cover-logo-top">goodseed AI 연구소</div>
+
+  <!-- 십자가+빛+책 SVG 일러스트 -->
+  <svg class="cover-art" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- 빛의 광선 -->
+    <defs>
+      <radialGradient id="lightGrad" cx="50%" cy="40%" r="60%">
+        <stop offset="0%" stop-color="#FFE57F" stop-opacity="0.9"/>
+        <stop offset="60%" stop-color="#FFD600" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="#FFD600" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <circle cx="100" cy="80" r="90" fill="url(#lightGrad)"/>
+    <!-- 광선 -->
+    <g stroke="#FFD600" stroke-width="1.2" opacity="0.6">
+      <line x1="100" y1="80" x2="100" y2="10"/>
+      <line x1="100" y1="80" x2="40" y2="20"/>
+      <line x1="100" y1="80" x2="160" y2="20"/>
+      <line x1="100" y1="80" x2="20" y2="60"/>
+      <line x1="100" y1="80" x2="180" y2="60"/>
+    </g>
+    <!-- 십자가 -->
+    <rect x="93" y="40" width="14" height="80" fill="#FFD600" rx="2"/>
+    <rect x="75" y="60" width="50" height="14" fill="#FFD600" rx="2"/>
+    <!-- 펼쳐진 책 -->
+    <g transform="translate(50,140)">
+      <path d="M 0,15 Q 50,5 100,15 L 100,45 Q 50,35 0,45 Z" fill="#FFFFFF" stroke="#FFD600" stroke-width="1.5"/>
+      <line x1="50" y1="10" x2="50" y2="42" stroke="#0D1B6E" stroke-width="1.5"/>
+      <line x1="10" y1="22" x2="45" y2="20" stroke="#0D1B6E" stroke-width="0.8"/>
+      <line x1="10" y1="28" x2="45" y2="26" stroke="#0D1B6E" stroke-width="0.8"/>
+      <line x1="10" y1="34" x2="45" y2="32" stroke="#0D1B6E" stroke-width="0.8"/>
+      <line x1="55" y1="20" x2="90" y2="22" stroke="#0D1B6E" stroke-width="0.8"/>
+      <line x1="55" y1="26" x2="90" y2="28" stroke="#0D1B6E" stroke-width="0.8"/>
+      <line x1="55" y1="32" x2="90" y2="34" stroke="#0D1B6E" stroke-width="0.8"/>
+    </g>
+  </svg>
+
+  <h1>목회자를 위한</h1>
+  <h2>Google Gemini<br>&amp; NotebookLM</h2>
+  <h3>실전 예제 중심 교육 교재</h3>
+  <div class="sub">히브리어·헬라어 원어 연구 · 설교 · 심방 · 행정<br>SNS · 슬라이드 · 인포그래픽 · 팟캐스트</div>
+  <div class="cover-divider"></div>
+  <div class="cover-author">저자: 오경근 박사</div>
+  <div class="cover-author-sub">서일대학교 AI융합학과 교수</div>
+  <div class="cover-bottom">
+    <div class="cover-gs">goodseed AI 연구소</div>
+    2026년도 목회자 AI 역량 강화 과정
+  </div>
+</div>
+
+<a id="part1"></a>
+<!-- 목차 -->
+<div class="toc-page" id="toc">
+  <h1>목   차</h1>
+  <div class="toc-part">서  론</div>
+  <ul class="toc-list"><li><span class="title">서론 — 제미나이 첫걸음: 5분 만에 첫 대화 시작하기</span><span class="pg" id="pg-intro"></span></li></ul>
+  <div class="toc-part">Part 1 — Google Gemini</div>
+  <ul class="toc-list">
+    <li><span class="title"><b>제1장</b>  성경 원어 연구 &amp; 강해설교 — 히브리어·헬라어 분석</span><span class="pg" id="pg-ch1"></span></li>
+    <li class="toc-sub"><span class="title">· 히브리어 / 헬라어 / 단어 추적 / 단락 주해 / 성경신학 / 난해구절 / 번역비교 / 신학토론 / 풀 패키지</span><span class="pg"></span></li>
+    <li><span class="title"><b>제2장</b>  설교 준비 — 본문 연구부터 원고 완성까지</span><span class="pg" id="pg-ch2"></span></li>
+    <li><span class="title"><b>제3장</b>  성경 공부 &amp; 소그룹 인도 자료</span><span class="pg" id="pg-ch3"></span></li>
+    <li><span class="title"><b>제4장</b>  심방 &amp; 상담 지원</span><span class="pg" id="pg-ch4"></span></li>
+    <li><span class="title"><b>제5장</b>  교회 행정 문서</span><span class="pg" id="pg-ch5"></span></li>
+    <li><span class="title"><b>제6장</b>  교회학교 &amp; 청년부 교육 자료</span><span class="pg" id="pg-ch6"></span></li>
+    <li><span class="title"><b>제7장</b>  SNS &amp; 홍보 — 인스타그램·카카오톡·유튜브</span><span class="pg" id="pg-ch7"></span></li>
+    <li><span class="title"><b>제8장</b>  제미나이 고급 기술 — 모델 선택·Gems·이미지·연동</span><span class="pg" id="pg-ch8"></span></li>
+  </ul>
+  <div class="toc-part">Part 2 — Google NotebookLM</div>
+  <ul class="toc-list">
+    <li><span class="title"><b>제9장</b>  노트북LM 첫걸음</span><span class="pg" id="pg-ch9"></span></li>
+    <li><span class="title"><b>제10장</b>  설교 &amp; 성경 연구 노트북 운영</span><span class="pg" id="pg-ch10"></span></li>
+    <li><span class="title"><b>제11장</b>  교회 문서 관리 &amp; 분석</span><span class="pg" id="pg-ch11"></span></li>
+    <li><span class="title"><b>제12장</b>  오디오·슬라이드·인포그래픽·동영상 기능 완전 활용</span><span class="pg" id="pg-ch12"></span></li>
+    <li><span class="title"><b>부  록</b>  프롬프트 50선 / 용어 사전 / AI 목회자 10계명</span><span class="pg" id="pg-appendix"></span></li>
+  </ul>
+</div>
+
+<!-- 사용법 -->
+<div class="chapter" id="usage">
+  <div class="chap-cover"><div class="badge">사용법</div><h1>이 책의 사용법</h1></div>
+  <p>이 교재는 처음부터 끝까지 <strong>예제와 프롬프트로만</strong> 구성되어 있습니다. 이론 설명은 최소화하고, 목회 현장에서 바로 붙여넣기 할 수 있는 프롬프트와 그 결과를 중심으로 만들었습니다.</p>
+  <div class="lbl">📌 교재 구성 기호 안내</div>
+  <ul class="bl">
+    <li><strong>📋 상황</strong> — 어떤 상황에서 쓰는지 설명합니다.</li>
+    <li><strong>✏️ 입력 프롬프트</strong> — 제미나이/노트북LM에 이 문장을 그대로 입력하세요.</li>
+    <li><strong>💬 응답 예시</strong> — 실제로 받을 수 있는 응답의 예시입니다.</li>
+    <li><strong>🎯 직접 해보기</strong> — 예제를 여러분 상황에 맞게 바꿔 입력해 보세요.</li>
+    <li><strong>💡 Tip</strong> — 더 잘 활용하는 방법을 알려 줍니다.</li>
+    <li><strong>⚠️ 주의</strong> — 반드시 지켜야 할 사항입니다.</li>
+  </ul>
+  <div class="tip">책을 읽는 것보다 직접 입력해 보는 것이 100배 효과적입니다. gemini.google.com 과 notebooklm.google.com 을 열어 두고 시작하세요.</div>
+</div>
+
+<hr class="divider">
+
+<!-- ════ 서론 ════ -->
+<div class="chapter" id="intro">
+  <div class="chap-cover">
+    <div class="badge">서  론</div>
+    <h1>제미나이 첫걸음 — 5분 만에 첫 대화 시작하기</h1>
+  </div>
+  <div class="section"><h2>서론-1  접속 방법 (3단계)</h2>
+    <div class="step"><span class="sn b">Step 1</span><span>크롬(Chrome) 브라우저를 열고 <strong>gemini.google.com</strong> 을 입력합니다.</span></div>
+    <div class="step"><span class="sn b">Step 2</span><span>Gmail 계정으로 로그인합니다. Gmail이 없다면 accounts.google.com에서 무료로 만드세요.</span></div>
+    <div class="step"><span class="sn b">Step 3</span><span>화면 아래 입력창에 바로 한국어로 질문을 입력할 수 있습니다.</span></div>
+    <div class="tip">스마트폰에서는 "Gemini" 앱을 설치하면 더 편리합니다.</div>
+  </div>
+  <div class="section"><h2>서론-2  첫 번째 대화 실습</h2>
+    <div class="scene">처음 제미나이를 켰습니다. 간단한 것부터 시작합니다.</div>
+    <div class="pb"><span class="pl">입력 프롬프트</span><div class="pt">안녕하세요. 저는 한국 교회 목사입니다. 목사인 제가 제미나이를 어떻게 활용할 수 있는지 5가지만 알려 주세요.</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">1. 성경 연구: 히브리어·헬라어 원어 분석, 난해 구절 해석
+2. 설교 준비: 본문 배경 조사, 예화 수집, 설교 개요 작성
+3. 성경 공부 자료: 소그룹 토론 질문, 귀납적 성경 공부 자료 제작
+4. 심방 준비: 위로 말씀, 기도문 초안 작성
+5. 행정 문서: 주보, 회의록, 공문서, 서신 작성</div></div>
+  </div>
+  <div class="section"><h2>서론-3  잘 쓰는 프롬프트의 3요소</h2>
+    <ul class="bl">
+      <li><strong>[요소 1] 역할:</strong> "저는 농촌 교회 50명 담임 목사입니다."</li>
+      <li><strong>[요소 2] 지시:</strong> "본문 시편23편, '목자를 따르는 신뢰에 대한 부분을 중심으로 본문 연구, 원어연구, 시대적 배경연구 해 주세요."</li>
+      <li><strong>[요소 3] 조건:</strong> "청중은 60대 이상 어르신이고, 농사를 주로 하고 있는 여성입니다."</li>
+    </ul>
+    <div class="pb"><span class="pl">좋은 프롬프트 예제</span><div class="pt">나는 200명 규모 도시 교회 담임 목사입니다. 이번 주 설교 본문은 시편 23편이고,
+청중은 코로나 이후 삶의 피로감을 느끼는 40-60대 직장인·주부입니다.
+위로와 소망을 주는 중심으로 설교 제목을 10개 제안해 주세요. 시적이고 감동적인 제목으로 만들어 주세요.</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">1. 지쳐 쓰러질 때, 목자는 나를 이끄신다
+2. 사망의 음침한 골짜기에서도 두렵지 않은 이유
+3. 내 잔이 넘치나이다 — 이미 충분히 채워진 삶
+4. 쉴 만한 물가로 — 하나님이 주시는 진짜 안식
+5. 의의 길로 인도하심을 믿으라
+6. 선하심과 인자하심이 나를 따르리니
+7. 광야 같은 세상, 목자 같은 하나님
+8. 지금 이 자리에도 하나님이 계십니다
+9. 풀밭에 누이시는 하나님의 손길
+10. 여호와는 나의 목자시니 — 그것으로 충분합니다</div></div>
+    <div class="do">이 프롬프트에서 본문을 "빌립보서 4:4-7", 청중을 "청년 20-30대"로 바꿔 입력해 보세요.</div>
+  </div>
+  <div class="section"><h2>서론-4  대화 이어가기 &amp; 저장</h2>
+    <div class="pb"><span class="pl">이어서 입력</span><div class="pt">1번 제목이 마음에 드는데, 좀 더 짧게 5글자 이내로 줄여 주세요.</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">"목자의 품에서" / "목자는 여기" / "쉬어라, 양아"</div></div>
+    <div class="tip">왼쪽 사이드바에 대화가 자동 저장됩니다. "설교_20261101"처럼 이름을 바꿔 두면 나중에 찾기 쉽습니다.</div>
+  </div>
+</div>
+
+<!-- 제1장 -->
+<div class="chapter" id="ch1">
+  <div class="chap-cover with-banner">
+    <img class="chap-banner" src="https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=1400&q=80" alt="펼쳐진 성경">
+    <div class="image-caption">— 펼쳐진 말씀, 깊은 원어의 세계 —</div>
+    <div class="badge">제 1 장</div>
+    <h1>성경 원어 연구 &amp; 강해설교<br>히브리어·헬라어 분석 / 난해 구절 해결</h1>
+  </div>
+  <div class="section"><h2>1-1  히브리어 원어 분석 — 창세기 1:1</h2>
+    <div class="scene">창세기 1장 1절로 강해설교를 준비합니다. 히브리어 배경 지식이 없어도 원어 분석을 받을 수 있습니다.</div>
+    <div class="pb"><span class="pl">실전 프롬프트</span><div class="pt">나는 구약 강해설교를 준비하는 목사입니다. 창세기 1장 1절 "태초에 하나님이 천지를 창조하시니라"를
+히브리어 원문으로 분석해 주세요.
+
+① 히브리어 원문 각 단어의 음역(발음)과 뜻
+② "베레쉬트"(태초에)의 원어적 의미와 신학적 함의
+③ "바라"(창조하다) 동사의 특별한 의미 — 왜 일반 "만들다"와 다른가
+④ "엘로힘"이 복수형인데 단수 동사를 쓰는 이유 (삼위일체 관련)
+⑤ 이 분석이 설교에서 어떻게 활용될 수 있는지 2가지 포인트</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">① 히브리어 단어 분석
+- בְּרֵאשִׁית (베레쉬트) = "태초에" — 전치사 베(~에) + 명사 레쉬트(시작, 으뜸)
+- בָּרָא (바라) = "창조하시니라" — 칼 완료형, 하나님만 주어로 쓰이는 특수 동사
+- אֱלֹהִים (엘로힘) = "하나님" — 복수형 명사, 단수 동사와 결합
+- הַשָּׁמַיִם (하샤마임) = "하늘" / הָאָרֶץ (하아레츠) = "땅"
+
+② "베레쉬트"의 신학적 함의
+"모든 것의 시작에 하나님이 이미 계셨다"는 선포. 하나님은 시간의 피조물이 아니라 시간의 창조자이십니다.
+
+③ "바라"(창조)의 특별한 의미
+히브리어 성경에서 바라는 오직 하나님만이 주어입니다. 무(無)에서 유(有)를 창조하는 행위(creatio ex nihilo)를 가리킵니다.
+
+④ 엘로힘의 복수-단수 결합
+"장엄 복수"(Majestic Plural)로 하나님의 위엄·충만·완전성을 표현합니다. 삼위일체 교리의 씨앗입니다.
+
+⑤ 설교 활용 포인트
+포인트 1: "하나님은 시간 안에 있지 않고, 시간을 만드셨다" — 불안한 현대인에게 주권적 돌보심 연결
+포인트 2: "창조는 오직 하나님만 하신다" — 인간의 한계와 창조자 하나님의 무한성 대조
+
+중요,중요-목회자의 질문?:AI가 만들어 내는 것은 창조인가?(Tip, AI와의 토론을 놓치면 놓치지마세요)  </div></div>
+    <div class="do">이 프롬프트에서 "창세기 1장 1절"을 이번 주 설교 본문(구약)으로 바꿔 입력해 보세요.</div>
+  </div>
+  <div class="section"><h2>1-2  헬라어 원어 분석 — 요한복음 1:1</h2>
+    <div class="pb"><span class="pl">실전 프롬프트</span><div class="pt">나는 신약 강해설교를 준비하는 목사입니다. 요한복음 1장 1절을 헬라어 원문으로 분석해 주세요.
+
+① 헬라어 원문 각 단어의 음역과 품사·뜻
+② "로고스"(λόγος)의 헬레니즘 철학적 배경과 요한이 이 단어를 선택한 이유
+③ "엔 아르케"(ἐν ἀρχῇ)와 창세기 1장 1절 "베레쉬트"의 연결고리
+④ "프로스 톤 테온"의 전치사 프로스가 주는 교제·관계의 뉘앙스
+⑤ 정관사 유무와 아리우스 논쟁 (신학적 차이)
+⑥ 설교 적용 2가지 포인트</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">① 헬라어 원문 분석
+- ἐν ἀρχῇ (엔 아르케): "태초에"
+- ἦν (엔): εἰμί의 미완료 과거, "계셨다" — 항상 존재하셨음을 강조
+- ὁ λόγος (호 로고스): "그 말씀"
+- πρὸς τὸν θεόν: "하나님과 함께"
+- θεὸς ἦν ὁ λόγος: "그 말씀은 하나님이셨다"
+
+② 로고스의 배경
+스토아 철학에서 로고스는 우주를 지배하는 이성적 원리였습니다. 요한은 이 문화적 개념을 사용해 "당신들이 찾던 그 로고스가 바로 예수 그리스도입니다"라고 선언합니다.
+
+③ 창세기와 연결
+"엔 아르케"는 창세기 1:1의 히브리어 "베레쉬트"를 70인역(LXX)으로 번역한 표현입니다. 의도적으로 창세기를 메아리처럼 울립니다.
+
+④ 프로스(πρός)의 뉘앙스
+단순한 공간적 "함께"가 아니라 "얼굴을 마주하는" 방향성·교제·관계를 함축합니다. 삼위일체 내 영원한 교제의 신학적 근거입니다.
+
+⑤ 정관사와 아리우스 논쟁
+여호와의 증인은 테오스에 정관사가 없다고 "a god"으로 번역합니다. 그러나 헬라어 문법상 술어 명사는 정관사 없이도 동일 본질을 가리킵니다(콜웰의 규칙).
+
+⑥ 설교 적용
+포인트 1: "엔(있었다)"의 미완료 — 창조 이전부터 영원히 계셨던 말씀
+포인트 2: 로고스는 철학의 원리가 아니라 "인격"이시다 — 지식이 아니라 만남으로 오신 하나님</div></div>
+    <div class="do">요한복음 3:16 또는 이번 주 설교 신약 본문으로 바꿔 헬라어 원문 분석을 요청해 보세요.</div>
+  </div>
+  <div class="section"><h2>1-3  단어 연구 — "헤세드" 성경 전체 추적</h2>
+    <div class="pb"><span class="pl">실전 프롬프트</span><div class="pt">나는 설교를 준비하는 목사입니다. "헤세드"(חֶסֶד, 히브리어)를 성경 전체에서 추적해 주세요.
+① 기본 의미와 번역 문제 ② 중요한 구절 5개 (뉘앙스 차이)
+③ 하나님의 성품으로 선언되는 구절 3개 ④ 신약의 어떤 헬라어 단어와 연결되는가
+⑤ 이 단어를 중심으로 3대지 설교 개요 제안</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">① 의미: 계약 관계 안에서의 "충성스러운 사랑", "언약적 신실함".
+NIV: "unfailing love" / NASB: "lovingkindness" / KJV: "mercy"
+
+② 핵심 구절 5개
+- 출 34:6-7: "헤세드와 진실이 많은 하나님" — 하나님 자기 계시의 정점
+- 시 136편: "그의 인자하심이 영원함이로다" — 26번 반복
+- 미 6:8: "헤세드를 사랑하며" — 삶의 요구
+- 룻 1:8: 나오미가 룻에게 — 인간 사이의 헤세드
+- 호 6:6: "나는 헤세드를 원하고 제사를 원하지 아니하노라"
+
+③ 하나님 성품 구절: 시 103:8 / 렘 31:3 / 애 3:22
+
+④ 신약 연결
+- χάρις(카리스, 은혜): 헤세드의 무조건적 측면
+- ἔλεος(엘레오스, 긍휼): 헤세드의 자비 측면
+
+⑤ 3대지 설교 개요
+제목: "영원한 헤세드 — 하나님의 멈추지 않는 사랑"
+대지 1: 헤세드는 감정이 아니라 언약이다 (시 136편)
+대지 2: 헤세드는 대가를 요구하지 않는다 (룻 1:8, 애 3:22)
+대지 3: 헤세드는 오늘 나를 향해 여전히 작동한다 (렘 31:3)
+
+토론-창세기의 요셉과 관련하여 헤세드를 적용한다면 어떤 부분을 설명할 수 있을까?
+적용- 현재 전쟁 상황에서 헤세드를 적용한다면  요한웨슬레의 신학으로 변증하라 </div></div>
+  </div>
+  <div class="section"><h2>1-4  단락 주해 에베소서 2:1-10 / 난해 구절 빌립보서 2:12</h2>
+    <div class="pb"><span class="pl">단락 주해 프롬프트</span><div class="pt">나는 에베소서 2:1-10을 강해설교하는 목사입니다.
+① 단락의 문학적 구조 ② "네크로스"(죽음) 헬라어 분석
+③ 4절 접속사 "그러나"(δέ)의 신학적 드라마
+④ 8-9절 논리 구조 (은혜·믿음·행위) ⑤ 10절 "포이에마"의 의미
+⑥ 40분 강해설교 개요</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">① 구조: A.1-3절(과거·죽음) B.4-7절(하나님의 행동) C.8-9절(구원 원리) D.10절(목적·포이에마)
+② 네크로스: 영적 완전 죽음 상태 — 전적 타락 교리의 근거
+③ δέ의 드라마: "δὲ ὁ θεός"(그러나 하나님은) — 역사의 방향을 바꾸는 두 단어
+④ 8-9절: 은혜(하나님 편) + 믿음(인간 반응) + 선물(모두 하나님이 주심) + 행위 아님(인간 공로 배제)
+⑤ 포이에마: "시, 걸작품"의 어원. "당신은 하나님의 시입니다."
+⑥ 제목: "죽었다가 살아난 시"
+1대지(1-3절): 우리는 죽어 있었다
+2대지(4-7절): 그러나 하나님이 행동하셨다
+3대지(8-10절): 우리는 이제 걸작품이다</div></div>
+    <div class="pb"><span class="pl">난해 구절 프롬프트</span><div class="pt">나는 목사입니다. "두렵고 떨림으로 너희 구원을 이루라"(빌 2:12)를 분석해 주세요.
+① 왜 논쟁적인가 ② 행위 구원론적 해석 비판
+③ 개혁주의 해석 ④ 공동체적 해석 ⑤ 13절과 함께 읽기 ⑥ 성도 설명 권장 방식</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">① κατεργάζεσθε(명령형)이 구원을 인간 노력으로 완성해야 한다는 인상을 줌.
+② 비판: 롬 3:28, 엡 2:8-9와 정면 충돌.
+③ 개혁주의: "실행하다, 표현하다"의 의미. 이미 받은 구원을 삶에서 살아내라.
+④ 공동체적: "너희"(복수)는 빌립보 교회 전체 공동체.
+⑤ 13절 해결: "너희 안에서 행하시는 이는 하나님이시니" — 이루는 주체는 하나님.
+⑥ 권장: "이미 은혜로 구원받으셨습니다. 그 귀한 구원을 경외함으로 삶에서 표현하며 살라는 것입니다."</div></div>
+  </div>
+  <div class="section"><h2>1-5  강해설교 풀 패키지 — 갈라디아서 2:20</h2>
+    <div class="pb"><span class="pl">실전 프롬프트</span><div class="pt">나는 담임 목사입니다. 갈라디아서 2장 20절로 강해설교 풀 패키지를 만들어 주세요.
+[Step 1] 헬라어 원문 핵심 단어 분석 (3개 이상)
+[Step 2] "십자가에 못 박혔다"와 "내가 사는 것"의 역설 설명
+[Step 3] 40분 강해설교 개요 (서론·3대지·결론)
+[Step 4] 한국 40-60대 성도 공감 예화 2개
+[Step 5] 결론 초청 문구(30초)예시</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">[Step 1] 헬라어
+- συνεσταύρωμαι (쉬네스타우로마이): 완료 수동 — 과거에 일어났고 효력이 현재까지 지속
+- ζῶ (조): 현재 능동 "살다" — 일상적 삶의 지속
+- πίστει (피스테이): 여격 "믿음으로/믿음 안에서"
+
+[Step 2] 역설 3가지
+- "못 박혔다" vs "산다" — 죽음이 생명의 조건
+- "내가 사는 것이 아니라" vs "내가 사노라" — 자아의 소멸과 지속
+- 그리스도의 생명이 내 안에 — 더 깊은 나가 됨
+
+[Step 3] 설교 개요
+제목: "이상하게도 나는 살아 있다"
+서론: 빈 껍데기의 삶 vs 진짜 삶 — 우리는 무엇으로 살고 있는가?
+1대지: 못 박혀야 살 수 있다 / 2대지: 내가 사는 것이 아니라 그리스도가 사신다
+3대지: 믿음 안에서 — 매일의 선택과 의탁
+결론: 오늘 나는 내 생명의 주인인가?
+
+[Step 4] 예화
+예화 1(60대): 30년 직장 후 은퇴해 정체성을 잃은 장로님. 갈 2:20이 새 정체성을 주었습니다.
+예화 2(40대): 매일 성과로 자신을 증명해야 하는 직장인. "내가 사는 것이 아니라"는 말씀이 해방을 주었습니다.
+
+[Step 5]
+초청: "오늘 그리스도를 주인으로 드리는 선택을 하시겠습니까?"
+</div></div>
+  </div>
+</div><!-- /ch1 -->
+
+<!-- 제2장 -->
+<div class="chapter" id="ch2">
+  <div class="chap-cover with-banner">
+    <img class="chap-banner" src="https://images.unsplash.com/photo-1438032005730-c779502df39b?auto=format&fit=crop&w=1400&q=80" alt="교회 강단">
+    <div class="image-caption">— 강단에서 흘러나오는 말씀의 능력 —</div>
+    <div class="badge">제 2 장</div>
+    <h1>설교 준비 — 본문 연구부터 원고 완성까지</h1>
+  </div>
+  <div class="section"><h2>2-1  성경 본문 배경 조사</h2>
+    <div class="pb"><span class="pl">실전 프롬프트</span><div class="pt">나는 주일 설교를 준비하는 담임 목사입니다. 요한복음 4장 1-30절(사마리아 여인) 본문을 정리해 주세요.
+① 역사적·문화적 배경 ② 이 여인의 상황이 왜 특별한가
+③ 예수님의 파격적 행동 3가지 ④ 복음의 핵심 메시지 ⑤ 현대 한국 성도 적용 포인트 2가지</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">① 배경: 유대인은 사마리아인을 상종하지 않음. 우물은 마을 사교 중심지.
+② 여인: 낮(정오)에 혼자 온 것은 소외의 증거. 5번 이혼·사별 후 동거 중.
+③ 파격: 유대 남성이 사마리아 여인에게 먼저 말 걸기 / "물을 달라" 낮은 자세 / 메시야임 처음 선언.
+④ 핵심: 예수님은 경계를 넘어 소외된 자를 먼저 찾아오심. "생수"는 오직 예수 그리스도.
+⑤ 적용: 교회에서 소외감 느끼는 성도에게 예수님이 먼저 찾아오신다 / 전도는 먼저 다가가는 것.</div></div>
+  </div>
+  <div class="section"><h2>2-2  설교 개요 3가지 구조 / 예화 3종 만들기</h2>
+    <div class="pb"><span class="pl">설교 개요 프롬프트</span><div class="pt">나는 담임 목사입니다. 빌립보서 4:4-7로 40분 설교를 준비합니다. 청중: 40-60대.
+3가지 구조로 각각 설교 개요를 만들어 주세요:
+[A] 문제-원인-해결 / [B] 본문 단어 중심 / [C] 월요일 아침 내러티브</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">[A] 문제-원인-해결
+서론: "왜 주일의 기쁨이 월요일 아침에 사라질까요?"
+1대지: 기쁨이 사라지는 이유(염려) / 2대지: 기쁨의 비결(기도와 감사) / 3대지: 기쁨의 결과(평강)
+
+[B] 단어 중심: 기쁨(명령어) / 관용(먼저 양보) / 염려-감사-기도의 교환 / 평강(지키시는 것)
+
+[C] 내러티브: 월요일 아침 7시 출근 준비 → 빌 4:4-7 묵상 → 태도 변화 → 퇴근길</div></div>
+    <div class="pb"><span class="pl">예화 프롬프트 — 청중 맞춤 3종</span><div class="pt">나는 담임 목사입니다. 주제: "작은 것에 감사하는 삶"(살전 5:18).
+[예화 1] 70대 어르신 / [예화 2] 40대 직장인 / [예화 3] 20대 청년 — 각 4-5문장씩</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">[예화 1] 87세 할머니는 매일 눈을 뜨면 "감사합니다"를 말합니다. 왜냐고 여쭤보니 "눈이 떠졌으니까요"라고 웃으셨습니다. 당연하다 여기던 것들이 사실은 하나하나 선물이었습니다.
+
+[예화 2] 강남 IT 기업 40대 집사는 연봉이 올랐는데도 만족하지 못했습니다. 퇴근길 편의점 청년의 평온한 표정을 보며 "나는 무엇을 기다리는 걸까?"라고 생각했습니다.
+
+[예화 3] 취준생 청년은 인스타그램을 볼 때마다 불안했습니다. 지방 친구가 "서울에서 혼자 사는 거 대단한데?"라고 했을 때, 당연하다고 생각했던 것이 누군가의 부러움이었습니다.</div></div>
+  </div>
+</div>
+
+<!-- 제3장 -->
+<div class="chapter" id="ch3">
+  <div class="chap-cover with-banner">
+    <img class="chap-banner" src="https://images.unsplash.com/photo-1529070538774-1843cb3265df?auto=format&fit=crop&w=1400&q=80" alt="소그룹 성경 공부">
+    <div class="image-caption">— 함께 펼치는 말씀, 자라가는 공동체 —</div>
+    <div class="badge">제 3 장</div>
+    <h1>성경 공부 &amp; 소그룹 인도 자료</h1>
+  </div>
+  <div class="section"><h2>3-1  소그룹 4주 커리큘럼</h2>
+    <div class="pb"><span class="pl">실전 프롬프트</span><div class="pt">나는 소그룹 담당 목사입니다. "기도 생활 회복" 주제로 4주 커리큘럼을 만들어 주세요.
+대상: 신앙 5-10년 30-40대 성도 (8-10명) / 시간: 주 1회 90분
+각 주차마다: 제목 / 핵심 구절 / 도입 질문 / 탐구 질문 3개 / 적용 질문 2개 / 실천 과제</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">■ 1주차: 기도가 식어버린 이유
+핵심 구절: 눅 18:1 / 마 6:7-8
+도입: "마지막으로 기도하면서 뜨거워진 적이 언제였나요?"
+탐구: ①예수님이 "항상 기도하라"고 한 이유? ②기도가 식는 이유? ③마 6장에서 경계한 기도 방식은?
+적용: ①내 기도 생활 10점 중 몇 점? ②어떤 계기로 기도가 식었나요?
+실천: 매일 아침 5분 "주님, 저 여기 있어요"로 기도 시작
+
+■ 2주차: 주기도문으로 배우는 기도 구조 (마 6:9-13)
+■ 3주차: 응답 없는 기도, 포기해야 하나? (약 5:16-18)
+■ 4주차: 기도 공동체로 함께 세워가기 (행 1:14)</div></div>
+  </div>
+  <div class="section"><h2>3-2  귀납적 성경 공부 9개 질문 세트</h2>
+    <div class="pb"><span class="pl">실전 프롬프트</span><div class="pt">나는 소그룹 리더입니다. 야고보서 1:2-8로 귀납적 성경 공부를 진행합니다.
+관찰/해석/적용 각 3개씩 총 9개 질문을 만들어 주세요.
+특히 [적용] 질문은 한국 직장인·주부·청년의 실제 상황과 연결해 주세요.</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">[관찰] ①1-3절에서 시험을 만날 때 어떻게 하라고 했습니까?
+② "온전하고 구비하여"(4절) 되려면 무엇이 필요합니까?
+③ 믿음으로 구하지 않는 자를 무엇에 비유했습니까?(6절)
+
+[해석] ①"시험을 기쁘게 여기라"는 시험이 좋다는 뜻인가요?
+② 인내가 완성되면 왜 온전해집니까?
+③ "두 마음을 품는 자"(8절)는 어떤 상태입니까?
+
+[적용] ①지금 내가 겪는 가장 힘든 시험은 무엇이고, 그것이 나를 어떻게 다듬고 있나요?
+② 기도할 때 의심한 경험을 나눠 주세요.
+③ 이번 주 내 삶에서 인내가 가장 필요한 한 가지 상황은?</div></div>
+  </div>
+</div>
+
+<!-- 제4장 -->
+<div class="chapter" id="ch4">
+  <div class="chap-cover with-banner">
+    <img class="chap-banner" src="https://images.unsplash.com/photo-1518398046578-8cca57782e17?auto=format&fit=crop&w=1400&q=80" alt="기도하는 손">
+    <div class="image-caption">— 함께 손을 잡고 기도하는 따뜻한 동행 —</div>
+    <div class="badge">제 4 장</div>
+    <h1>심방 &amp; 상담 지원</h1>
+  </div>
+  <div class="section"><h2>4-1  병원 심방 완전 패키지</h2>
+    <div class="scene">내일 암으로 항암 치료 중인 70대 집사님을 병원 심방합니다.</div>
+    <div class="pb"><span class="pl">실전 프롬프트</span><div class="pt">나는 담임 목사입니다. 70대 장기 입원 환자(암 투병 중) 심방 패키지를 만들어 주세요.
+① 위로 성경 구절 3개 (이유 한 줄씩) ② 심방 말씀 묵상 (3분 분량)
+③ 환자·가족을 위한 기도문 예시- tip)AI가 준 기도문을 그대로 읽지 마세요.-기도는 나와 하나님과의 관계이기 때문입니다. (1분 30초) ④ 절대 하지 말아야 할 말 5가지
+⑤ 퇴원 후 돌봄 아이디어 3가지</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">① 위로 구절
+- 사 41:10 "두려워하지 말라 내가 너와 함께함이라" → 하나님이 먼저 "나 여기 있다"고 말씀하심
+- 시 23:4 "내가 사망의 음침한 골짜기로 다닐지라도" → 골짜기는 지나가는 길, 머무는 곳이 아님
+- 롬 8:28 "모든 것이 합력하여 선을 이루느니라" → 고통도 하나님 손 안에 있음
+
+② 말씀 묵상 (3분): "지금 이 병실은 집사님이 영원히 머물 곳이 아닙니다. 지나가는 길입니다. 그 길을 혼자 가시는 것이 아닙니다. 목자가 함께 가십니다."
+
+③ 기도문: 아버지, 오늘 이 병실에 함께하심에 감사드립니다. ○○ 집사님의 통증마다 주님의 위로가 함께하시고, 치료 과정마다 의료진 손에 지혜가 함께하소서. 가족들도 붙들어 주소서. 예수님 이름으로. 아멘.
+
+④ 하지 말 말: "왜 이런 병에 걸리셨어요?" / "기도하면 낫습니다"(약속 금지) / "얼마나 더 사실 수 있대요?" / "힘내세요, 잘 될 거예요"(빈 위로) / 다른 환자 이야기
+
+⑤ 퇴원 후: 매주 정기 안부 문자 / 권사회 격주 식사 봉사 / 교회 중보기도 명단 등록</div></div>
+  </div>
+  <div class="section"><h2>4-2  사별 심방 / 취업 실패 청년 심방</h2>
+    <div class="pb"><span class="pl">사별 심방 프롬프트</span><div class="pt">나는 목사입니다. 3주 전 남편을 잃은 60대 권사님, 첫 심방입니다.
+① 적합한 성경 말씀 3개 ② 건넬 말 5가지 ③ 하지 말아야 할 말 5가지 ④ 3개월 돌봄 계획</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">① 말씀: 시 34:18 / 요 11:35 "예수께서 눈물을 흘리시더라"(슬픔은 잘못이 아님) / 사 43:2
+② 건넬 말: "얼마나 힘드셨어요. 아무 말 안 해도 됩니다." / "그냥 옆에 있고 싶어서 왔습니다." / "남편 이야기 해주실 수 있어요? 듣고 싶습니다."
+③ 하지 말 말: "천국에서 행복하게 계실 거예요" / "이제 그만 슬퍼해야죠" / "하나님 뜻이니 받아들이세요"
+④ 1개월: 주 1회 방문·실질 도움 / 2개월: 격주 연락·소그룹 초대 / 3개월: 월 1회·기일 먼저 연락</div></div>
+  </div>
+</div>
+
+<!-- 제5장 -->
+<div class="chapter" id="ch5">
+  <div class="chap-cover with-banner">
+    <img class="chap-banner" src="https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1400&q=80" alt="문서 작성">
+    <div class="image-caption">— 효율적인 교회 행정, 더 많은 사역 시간 —</div>
+    <div class="badge">제 5 장</div>
+    <h1>교회 행정 문서</h1>
+  </div>
+  <div class="section"><h2>5-1  주보 인사말 / 당회 회의록</h2>
+    <div class="pb"><span class="pl">주보 인사말 프롬프트</span><div class="pt">나는 담임 목사입니다. 이번 주 주보 인사말을 작성해 주세요.
+절기: 추수감사절 전 주 / 설교 주제: "감사가 삶을 바꾼다"(시 100편)
+행사: 목요일 전교인 감사 예배 / 분량: 150자</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">사랑하는 성도 여러분, 가을 단풍처럼 우리의 감사도 물들어가는 계절입니다. 이번 주 우리는 시편 기자처럼 "감사함으로 그의 문에 들어가" 예배드립니다. 목요일 저녁 7시 전교인 감사 예배에서 한자리에 모여 주님께 감사를 드립시다. 여러분 한 분 한 분이 이 교회의 감사 제목입니다.</div></div>
+    <div class="pb"><span class="pl">당회 회의록 프롬프트</span><div class="pt">나는 목사입니다. 당회 회의 내용을 공식 회의록으로 작성해 주세요.
+일시: 2026년 10월 15일 오후 2시 / 참석: 담임 목사 포함 장로 5명 전원
+안건: ①선교비 5% 증액 결의 ②교육관 냉방기 교체 3개월 후 재검토 ③가을 전도 축제 준비위원회 구성</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">당 회 회 의 록
+■ 일시: 2026년 10월 15일 오후 2시 / ■ 장소: ○○교회 세미나실 / ■ 참석: 전원 5명
+【안건 1】 해외 선교 지원 예산 5% 증액 — 가결 (5/5)
+【안건 2】 교육관 냉방기 교체 — 2027년 1월 재검토 보류 (5/5)
+【안건 3】 가을 전도 축제 준비위원회, 정○○ 장로 책임 — 가결 (5/5)
+■ 다음 당회: 2026년 11월 19일 / 기록: 담임 목사 김○○ (인)</div></div>
+  </div>
+</div>
+
+<!-- 제6장 -->
+<div class="chapter" id="ch6">
+  <div class="chap-cover with-banner">
+    <img class="chap-banner" src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1400&q=80" alt="아이들과 교사">
+    <div class="image-caption">— 다음 세대를 양육하는 즐거운 시간 —</div>
+    <div class="badge">제 6 장</div>
+    <h1>교회학교 &amp; 청년부 교육 자료</h1>
+  </div>
+  <div class="section"><h2>6-1  여름 성경학교 5일 커리큘럼</h2>
+    <div class="pb"><span class="pl">실전 프롬프트</span><div class="pt">나는 교육부 담당 목사입니다. 초등 4-6학년 대상 여름 성경학교(5일) 커리큘럼을 만들어 주세요.
+주제: "성경 속 하나님의 영웅들"-하나님과 함께한 승리를 중심으로
+각 날마다: 주인공(성경 인물) / 핵심 말씀 / 영웅의 결정적 순간 / 창의 활동 / 오늘의 교훈</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">1일차: 다윗 — 삼상 17:45 / 골리앗 앞에 선 소년 / 활동: 두려움 적고 콩주머니 던지기 / 교훈: 하나님과 함께라면 두렵지 않아!
+2일차: 에스더 — 에 4:14 / 민족을 위해 목숨을 건 용기 / 활동: 왕에게 편지 쓰기 / 교훈: 나는 이 시대를 위해 태어났어!
+3일차: 다니엘 — 단 6:10 / 사자 굴에도 기도를 멈추지 않음 / 활동: 기도 타임캡슐 만들기 / 교훈: 기도는 멈추지 마!
+4일차: 룻 — 룻 1:16 / 시어머니를 따른 신실함 / 활동: 감사 메달 만들기 / 교훈: 충성이 기적을 만든다!
+5일차: 바울 — 빌 4:13 / 감옥에서도 찬양 / 활동: 내 슈퍼파워 카드 / 교훈: 예수님 안에서 나는 무엇이든 할 수 있어!</div></div>
+  </div>
+  <div class="section"><h2>6-2  청년부 8주 시리즈 기획</h2>
+    <div class="pb"><span class="pl">실전 프롬프트</span><div class="pt">나는 청년부 담당 목사입니다. 20-30대 청년을 위한 8주 시리즈를 기획해 주세요.
+주제: "오늘을 살아가는 그리스도인" / 이슈: 취업·연애·부모갈등·신앙회의·SNS·돈·교회실망·소명
+각 주차: 제목(청년 언어) / 핵심 구절 / 토론 질문 1개</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">1주: "스펙이 전부가 아닌 이유" — 렘 1:5 / 토론: 하나님이 나를 부르신 자리는?
+2주: "좋아요가 많으면 행복한가요?" — 롬 12:2 / 토론: 내 SNS와 실제 내 삶은 얼마나 다른가?
+3주: "부모님이 틀렸다고 생각될 때" — 엡 6:1-3 / 토론: 부모 공경과 내 주체성 사이 어디쯤?
+4주: "연애, 성경에 답이 있을까?" — 고전 13:4-8 / 토론: 좋은 배우자 조건 세속 vs 성경 각 5가지
+5주: "하나님이 정말 있냐고요?" — 히 11:1 / 토론: 의심을 통해 단단해진 믿음이 더 성숙한가?
+6주: "돈 때문에 하나님을 믿어야 하나요?" — 마 6:33 / 토론: 지금 내가 하나님을 믿는 이유는?
+7주: "교회가 왜 이 모양인지 모르겠어요" — 고전 12:12-27 / 토론: 교회 실망과 내가 할 수 있는 것
+8주: "이 시대를 위해 내가 여기 있다" — 에 4:14 / 토론: 이 시대 그리스도인으로 존재해야 하는 이유</div></div>
+  </div>
+</div>
+
+<!-- 제7장 -->
+<div class="chapter" id="ch7">
+  <div class="chap-cover with-banner">
+    <img class="chap-banner" src="https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=1400&q=80" alt="SNS 콘텐츠">
+    <div class="image-caption">— SNS로 전하는 복음, 디지털 시대의 강단 —</div>
+    <div class="badge">제 7 장</div>
+    <h1>SNS &amp; 홍보 — 인스타그램·카카오톡·유튜브</h1>
+  </div>
+  <div class="section"><h2>7-1  인스타그램 카드뉴스 5장</h2>
+    <div class="pb"><span class="pl">실전 프롬프트</span><div class="pt">나는 목사입니다. 설교 본문 마태복음 6:25-34, 주제 "염려를 내려놓기", 청중 20-40대.
+5장짜리 카드뉴스 내용, 캡션(200자, 이모지 포함), 해시태그 10개를 만들어 주세요.</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">[카드 1] "새는 걱정하지 않는다" — 하늘의 새를 보세요. 씨를 뿌리지도 않지만 하나님이 먹이십니다. 당신은 새보다 훨씬 귀합니다.
+[카드 2] "염려는 키를 한 자도 늘이지 못한다" — 걱정 1,000번 해도 내일은 바뀌지 않습니다.
+[카드 3] "오늘에 충실하라" — 내일 걱정은 내일이 합니다.
+[카드 4] "먼저 그의 나라를 구하라" — 필요한 모든 것이 더해집니다.
+[카드 5] ○○교회 | 매주일 오전 11시 | 서울 ○○구
+
+캡션: 오늘도 염려가 따라붙나요? 🕊️ "공중의 새를 보라. 하나님이 기르시느니라." 새도 기르시는 분이 당신을 기르십니다. 이번 주 설교 핵심을 나눕니다. 💙
+
+해시태그: #염려내려놓기 #마태복음6장 #일요설교 #교회스타그램 #크리스천 #오늘의말씀 #하나님의돌보심 #주일예배 #믿음 #은혜</div></div>
+  </div>
+  <div class="section"><h2>7-2  카카오톡 주간 메시지 / 유튜브 최적화</h2>
+    <div class="pb"><span class="pl">카카오톡 프롬프트</span><div class="pt">나는 목사입니다. 교회 카카오톡 채널 월요일 아침 메시지:
+주일 설교 핵심 1문장(시 23편) / 이번 주 일정 3가지 / 기도 제목 2가지 / 격려 마무리
+이모지 활용, 줄바꿈 많이, 카카오톡 스타일로.</div></div>
+    <div class="rb"><span class="rl">응답 예시</span><div class="rt">🌿 ○○교회 주간 소식
+
+📖 이번 주 말씀
+"여호와는 나의 목자시니 내게 부족함이 없으리로다" (시 23:1)
+
+📅 이번 주 일정
+🔹 화요일 오전 10시 — 구역 예배
+🔹 목요일 오후 8시 — 중보기도회
+🔹 주일 오전 11시 — 주일 예배
+
+🙏 함께 기도해요
+1. 병중에 계신 성도님들의 빠른 쾌유
+2. 이번 주 새벽기도 참여 성도님들
+
+이번 주도 주님과 동행하는 복된 한 주 되세요! 💙</div></div>
+  </div>
+</div>
+
+<!-- 제8장 -->
+<div class="chapter" id="ch8">
+  <div class="chap-cover with-banner">
+    <img class="chap-banner" src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1400&q=80" alt="AI 기술">
+    <div class="image-caption">— AI 모델의 정확한 선택이 결과를 좌우합니다 —</div>
+    <div class="badge">제 8 장</div>
+    <h1>제미나이 고급 기술 — 모델 선택·Gems·이미지·연동</h1>
+  </div>
+  <div class="section"><h2>8-1  제미나이 모델 종류와 선택법</h2>
+    <div class="lbl">주요 모델 비교</div>
+    <ul class="bl">
+      <li><strong>Gemini 2.5 Pro</strong> — 가장 강력한 추론 모델. 히브리어·헬라어 분석, 복잡한 신학 논쟁에 최적. 느리지만 가장 정확.</li>
+      <li><strong>Gemini 2.5 Flash</strong> — 빠른 속도+높은 품질. 설교 준비, 주보 작성, 일상 행정에 최적.</li>
+      <li><strong>Gemini 2.0 Flash</strong> — 매우 빠른 실시간 응답. 간단한 문구, 빠른 아이디어.</li>
+    </ul>
+    <div class="lbl">목회 업무별 추천</div>
+    <ul class="bl">
+      <li>히브리어·헬라어 원어 분석 → <strong>Gemini 2.5 Pro</strong></li>
+      <li>설교 개요·예화·서론 → <strong>Gemini 2.5 Flash</strong></li>
+      <li>주보 인사말·문자 문구 → <strong>Gemini 2.0 Flash</strong></li>
+    </ul>
+    <div class="tip">원어 분석은 2.5 Pro로 받고, 설교 개요는 Flash로 이어가면 품질과 속도를 모두 잡을 수 있습니다.</div>
+    <div class="lbl">Gemini Advanced 전용 기능 (유료)</div>
+    <ul class="bl">
+      <li><strong>Deep Research</strong>: 주제 입력 시 다수의 웹 자료를 자동 검색·종합하여 리포트 생성</li>
+      <li><strong>Gemini Live</strong>: 실시간 음성 대화. 설교 원고를 읽으며 피드백 요청 가능</li>
+      <li><strong>파일 업로드</strong>: PDF·Word·이미지 직접 업로드 분석</li>
+    </ul>
+  </div>
+  <div class="section"><h2>8-2  Gems 만들기 — 나만의 목회 AI 비서</h2>
+    <div class="step"><span class="sn">Step 1</span><span>제미나이 사이드바 하단 → "Explore Gems" 클릭</span></div>
+    <div class="step"><span class="sn">Step 2</span><span>"+ New Gem" 클릭 → 이름 입력 (예: "설교준비비서")</span></div>
+    <div class="step"><span class="sn">Step 3</span><span>"Instructions"에 아래 내용을 붙여넣기 후 저장</span></div>
+    <div class="pb"><span class="pl">Gem Instructions 설정 예제</span><div class="pt">당신은 한국 교회 담임 목사의 설교 준비 전문 비서입니다.
+교회 정보: ○○교회 / 서울 ○○구 / 성도 약 200명 / 청중: 40-60대
+신학: 개혁주의 복음주의(장로교), 강해 설교 중심
+원칙: 신학적 오류 없을 것 / 예화는 한국 문화에 맞게 / 설교 시간 40분 기준
+항상 이 정보를 바탕으로 답해 주세요.</div></div>
+    <div class="tip">저장 후 이후 설교 준비 시 매번 교회 정보를 설명하지 않아도 됩니다.</div>
+  </div>
+  <div class="section"><h2>8-3  Google 서비스 연동 (Docs · Gmail)</h2>
+    <div class="step"><span class="sn b">Step 1</span><span>docs.google.com → 새 문서 열기 → 오른쪽 Gemini 아이콘(반짝이) 클릭</span></div>
+    <div class="step"><span class="sn b">Step 2</span><span>"Help me write" 입력창에 지시 입력</span></div>
+    <div class="pb"><span class="pl">Google Docs 예제</span><div class="pt">이번 주 주보 담임 목사 인사말을 추수감사절 주제로 150자 이내로 작성해 줘.</div></div>
+    <div class="step"><span class="sn b">Step 3</span><span>Gmail → 이메일 열기 → 반짝이 아이콘 → "Help me reply"</span></div>
+    <div class="pb"><span class="pl">Gmail 예제</span><div class="pt">이 이메일에 답장을 써줘. 교단 행사에 참석하겠다고 확인하고, 상세 일정을 다시 보내달라고 요청하는 내용으로.</div></div>
+  </div>
+</div>
+
+<!-- Part 2 구분 -->
+<div class="part-div" id="part2">
+  <svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" style="margin-bottom:14px;">
+    <rect x="10" y="14" width="60" height="50" rx="5" fill="#4A148C" stroke="#7B1FA2" stroke-width="2"/>
+    <rect x="14" y="18" width="52" height="42" rx="2" fill="#FAFAFA"/>
+    <line x1="20" y1="26" x2="60" y2="26" stroke="#7B1FA2" stroke-width="1.5"/>
+    <line x1="20" y1="32" x2="55" y2="32" stroke="#9C27B0" stroke-width="1"/>
+    <line x1="20" y1="38" x2="58" y2="38" stroke="#9C27B0" stroke-width="1"/>
+    <line x1="20" y1="44" x2="50" y2="44" stroke="#9C27B0" stroke-width="1"/>
+    <line x1="20" y1="50" x2="55" y2="50" stroke="#9C27B0" stroke-width="1"/>
+    <circle cx="40" cy="68" r="3" fill="#FFD600"/>
+  </svg>
+  <h2>Part 2 — Google NotebookLM</h2>
+  <p>나만의 목회 지식 베이스를 구축하라</p>
+</div>
+
+<!-- 제9장 -->
+<div class="chapter" id="ch9">
+  <div class="chap-cover with-banner">
+    <img class="chap-banner" src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1400&q=80" alt="노트북과 책">
+    <div class="image-caption">— 내가 모은 자료가 곧 지혜가 되는 노트북 —</div>
+    <div class="badge nlm">제 9 장</div>
+    <h1 class="nlm">노트북LM 첫걸음 — 5분 만에 첫 노트북 만들기</h1>
+  </div>
+  <div class="section"><h2 class="nlm">9-1  노트북LM vs 제미나이 차이점</h2>
+    <p><strong>제미나이:</strong> 무엇이든 물어볼 수 있는 범용 AI 비서 (인터넷 전체 참고)</p>
+    <p><strong>노트북LM:</strong> 내가 업로드한 자료만 바탕으로 답하는 특화 AI — 출처가 명확하고 신뢰 가능</p>
+    <div class="lbl">노트북LM 핵심 특징</div>
+    <ul class="bl">
+      <li>PDF, Google Docs, 텍스트, YouTube URL, 웹사이트 업로드 가능</li>
+      <li><strong>오디오 개요</strong>: 자료를 AI 팟캐스트 대화로 자동 생성</li>
+      <li><strong>슬라이드</strong>: 자료를 Google Slides 프레젠테이션으로 자동 변환</li>
+      <li><strong>인포그래픽</strong>: 핵심 내용을 시각적 요약 이미지로 생성</li>
+      <li><strong>Study Guide / FAQ</strong>: 학습 가이드·자주 묻는 질문으로 자동 생성</li>
+    </ul>
+  </div>
+  <div class="section"><h2 class="nlm">9-2  접속 &amp; 첫 노트북 만들기</h2>
+    <div class="step"><span class="sn b">Step 1</span><span><strong>notebooklm.google.com</strong> 접속 → Gmail 계정 로그인</span></div>
+    <div class="step"><span class="sn b">Step 2</span><span>"+ New Notebook" 클릭 → 노트북 이름 입력 (예: "설교연구_2026")</span></div>
+    <div class="step"><span class="sn b">Step 3</span><span>"Add sources" 클릭 → 자료 업로드</span></div>
+    <div class="step"><span class="sn b">Step 4</span><span>자료 처리 후 오른쪽 "Chat" 창에서 질문 시작</span></div>
+    <div class="pb"><span class="pl">첫 번째 질문 예시</span><div class="pt">업로드된 설교들의 공통 주제와 반복되는 키워드를 분석해 주세요.</div></div>
+    <div class="nb"><span class="nl2">노트북LM 응답 예시</span><div class="nt">업로드된 설교 5편 분석 결과:
+공통 주제: "두려움을 넘는 믿음"(3편), "공동체 안에서의 위로", "실생활과 신앙의 연결"
+자주 등장 키워드: 믿음(12회), 두려움(8회), 위로(7회), 은혜(10회)
+설교 스타일: 3대지 구조 중심, 현대 직장인 삶과 연결하는 예화 자주 사용</div></div>
+  </div>
+</div>
+
+<!-- 제10장 -->
+<div class="chapter" id="ch10">
+  <div class="chap-cover with-banner">
+    <img class="chap-banner" src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=1400&q=80" alt="신학 도서관">
+    <div class="image-caption">— 평생 모아온 주석과 자료가 한 곳에 —</div>
+    <div class="badge nlm">제 10 장</div>
+    <h1 class="nlm">설교 &amp; 성경 연구 노트북 운영</h1>
+  </div>
+  <div class="section"><h2 class="nlm">10-1  주석 노트북 &amp; 반복 방지 분석</h2>
+    <div class="pb"><span class="pl">주석 비교 질문</span><div class="pt">바울이 "믿음으로 의롭다 하심"을 설명하는 구절을 로마서와 갈라디아서에서 각각 찾아 비교해 주세요.</div></div>
+    <div class="nb"><span class="nl2">노트북LM 응답</span><div class="nt">로마서: 롬 3:22 / 4:5 / 5:1
+갈라디아서: 갈 2:16 / 3:6
+비교: 로마서는 보편적 구원 원리 설명, 갈라디아서는 율법주의 논쟁 맥락에서 믿음의 우위 강조.</div></div>
+    <div class="pb"><span class="pl">반복 방지 질문</span><div class="pt">이전 설교 원고 중 "은혜"를 주제로 설교한 내용을 찾아서, 이번 설교와 겹치지 않는 새로운 각도를 제안해 주세요.</div></div>
+    <div class="nb"><span class="nl2">노트북LM 응답</span><div class="nt">2026년 3월 설교에서 은혜를 "받는 것"의 관점으로 다루셨습니다.
+이번 에베소서 2장은 은혜를 "반응하는 것" — 선한 일로 살아가는 새 피조물의 관점으로 접근하시면 차별화됩니다.</div></div>
+  </div>
+  <div class="section"><h2 class="nlm">10-2  Study Guide &amp; FAQ 자동 생성</h2>
+    <div class="step"><span class="sn b">Step 1</span><span>성경 본문 + 주석 업로드(여러 주석을 올려놓고 서로 비교, 여러 성경을 업로드하고 서로 비교할 수 있다)</span></div>
+    <div class="step"><span class="sn b">Step 2</span><span>오른쪽 "Notebook guide" 패널 → "Study guide" 또는 "FAQ" 클릭</span></div>
+    <div class="step"><span class="sn b">Step 3</span><span>생성된 내용 검토 후 Chat으로 수정 요청</span></div>
+    <div class="pb"><span class="pl">수정 요청 예시</span><div class="pt">방금 생성된 Study Guide 질문들을 소그룹 토론 형식에 맞게 더 개방형으로 바꿔 주세요.
+질문마다 소그룹 리더용 진행 힌트를 한 줄씩 추가해 주세요.</div></div>
+  </div>
+</div>
+
+<!-- 제11장 -->
+<div class="chapter" id="ch11">
+  <div class="chap-cover with-banner">
+    <img class="chap-banner" src="https://images.unsplash.com/photo-1568667256549-094345857637?auto=format&fit=crop&w=1400&q=80" alt="문서 정리">
+    <div class="image-caption">— 흩어진 회의록·보고서를 한눈에 분석 —</div>
+    <div class="badge nlm">제 11 장</div>
+    <h1 class="nlm">교회 문서 관리 &amp; 분석</h1>
+  </div>
+  <div class="section"><h2 class="nlm">11-1  당회 회의록 전체 분석</h2>
+    <div class="pb"><span class="pl">노트북LM 질문</span><div class="pt">업로드된 회의록에서:
+① 가장 많이 논의된 안건 TOP 5
+② 2년간 주요 예산 결정 목록
+③ 미결 또는 재검토 예정 안건을 정리해 주세요.</div></div>
+    <div class="nb"><span class="nl2">노트북LM 응답</span><div class="nt">분석 결과 (당회 회의록 24회 기준):
+최다 논의: 1위 교육관 리모델링(7회) / 2위 선교비 배분(5회) / 3위 예배 시간 조정(4회)
+미결: 교육관 리모델링(2027년 1월 재검토), 청년부 공간 확충(예산 확보 후 재논의)</div></div>
+  </div>
+  <div class="section"><h2 class="nlm">11-2  설교 아카이브 검색 / 연간 사역 계획</h2>
+    <div class="pb"><span class="pl">아카이브 검색</span><div class="pt">"용서"를 주제로 설교한 내용을 모두 찾아 제목·날짜·핵심 요점 목록으로 만들어 주세요.</div></div>
+    <div class="pb"><span class="pl">연간 사역 계획</span><div class="pt">올해 사역 보고서와 회의록을 분석해서:
+① 올해 잘 된 사역 3가지 ② 부족했던 사역 3가지
+③ 성도들의 반복 요청 사항 ④ 내년도 우선순위 사역 제안 5가지</div></div>
+  </div>
+</div>
+
+<!-- 제12장 -->
+<div class="chapter" id="ch12">
+  <div class="chap-cover with-banner">
+    <img class="chap-banner" src="https://images.unsplash.com/photo-1478737270239-2f02b77fc618?auto=format&fit=crop&w=1400&q=80" alt="팟캐스트 마이크">
+    <div class="image-caption">— 설교를 듣는 팟캐스트 · 보는 슬라이드 —</div>
+    <div class="badge nlm">제 12 장</div>
+    <h1 class="nlm">오디오·슬라이드·인포그래픽·동영상 기능 완전 활용</h1>
+  </div>
+  <div class="section"><h2 class="nlm">12-1  슬라이드 생성 — Google Slides 자동 제작</h2>
+    <div class="step"><span class="sn b">Step 1</span><span>설교 원고 또는 성경 공부 자료 업로드</span></div>
+    <div class="step"><span class="sn b">Step 2</span><span>"Notebook guide" 패널 → <strong>"Slides"</strong> 클릭</span></div>
+    <div class="step"><span class="sn b">Step 3</span><span>생성 버튼 클릭 → Google Slides 파일 자동 생성 및 열기</span></div>
+    <div class="lbl">목회 활용 사례</div>
+    <ul class="bl">
+      <li><strong>설교 요약 슬라이드</strong>: 설교 원고 → "핵심 5장 슬라이드" 생성 → 주보 QR코드로 성도 공유</li>
+      <li><strong>성경 공부 교재</strong>: 소그룹 교재 → 인도자용 프레젠테이션 자동 제작</li>
+      <li><strong>새신자 오리엔테이션</strong>: 교회 소개 문서 → 슬라이드로 변환</li>
+    </ul>
+  </div>
+  <div class="section"><h2 class="nlm">12-2  인포그래픽 — 핵심 내용 시각화</h2>
+    <div class="step"><span class="sn b">Step 1</span><span>시각화할 자료 업로드 (성경 공부 교재, 사역 계획서 등)</span></div>
+    <div class="step"><span class="sn b">Step 2</span><span>"Notebook guide" 패널 → <strong>"Infographic"</strong> 클릭</span></div>
+    <div class="step"><span class="sn b">Step 3</span><span>생성된 인포그래픽 다운로드 → 주보·SNS·교회 게시판 활용</span></div>
+    <div class="lbl">활용 사례</div>
+    <ul class="bl">
+      <li>4주 성경 공부 커리큘럼 → 전체 흐름 한 장 인포그래픽 → 소그룹 첫날 나눠주기</li>
+      <li>교회 연간 사역 계획 → 월별 타임라인 인포그래픽 → 교회 게시판 게시</li>
+      <li>설교 시리즈 소개 → 비주얼 카드 → 교회 SNS 홍보</li>
+    </ul>
+  </div>
+  <div class="section"><h2 class="nlm">12-3  오디오 개요 — 팟캐스트 자동 생성</h2>
+    <div class="step"><span class="sn b">Step 1</span><span>설교 노트북에서 이번 주 설교 원고 업로드</span></div>
+    <div class="step"><span class="sn b">Step 2</span><span>"Notebook guide" 패널 → <strong>"Audio Overview"</strong> 클릭</span></div>
+    <div class="step"><span class="sn b">Step 3</span><span>"Customize" 버튼 클릭 → 아래 내용 입력</span></div>
+    <div class="pb"><span class="pl">Customize 입력 예시</span><div class="pt">이 팟캐스트를 듣는 대상은 주일 설교를 못 들은 한국 교회 성도들입니다.
+핵심 메시지를 쉽고 따뜻하게 10분 이내로 요약해 주세요.
+설교의 3가지 핵심 포인트와 삶의 적용을 강조해 주세요.</div></div>
+    <div class="step"><span class="sn b">Step 4</span><span>"Generate" 클릭 → 5-10분 후 오디오 파일 생성 완료</span></div>
+    <div class="step"><span class="sn b">Step 5</span><span>다운로드 후 카카오톡 채널·교회 앱·유튜브로 공유</span></div>
+    <div class="warn">오디오 개요는 영어로 생성됩니다. 한국어 버전이 필요하면 텍스트 스크립트를 복사해 번역하거나 직접 녹음하세요.</div>
+  </div>
+  <div class="section"><h2 class="nlm">12-4  YouTube 동영상 분석 / 새신자 4주 오디오 패키지</h2>
+    <div class="step"><span class="sn b">Step 1</span><span>"소스 추가" → YouTube URL 입력 (설교 영상, 신학 강의 등)</span></div>
+    <div class="pb"><span class="pl">분석 질문 예시</span><div class="pt">이 설교 영상의 핵심 주장 3가지를 요약해 주세요.
+이 설교자가 본문을 해석하는 방식과 내가 해석하는 방식의 차이점을 분석해 주세요.</div></div>
+    <div class="lbl">새신자 4주 오디오 패키지</div>
+    <ul class="bl">
+      <li><strong>1주차:</strong> "○○교회에 오신 것을 환영합니다" 오디오</li>
+      <li><strong>2주차:</strong> "예배가 처음이세요? 예배 순서 A to Z" 오디오</li>
+      <li><strong>3주차:</strong> "기도는 어떻게 하는 건가요?" 오디오</li>
+      <li><strong>4주차:</strong> "교회 가족이 된다는 것 — 세례와 등록" 오디오</li>
+    </ul>
+    <div class="tip">새신자 첫 방문 후 카카오톡으로 주 1개씩 4주간 공유하면 자연스러운 정착 시스템이 됩니다.</div>
+  </div>
+</div>
+
+<!-- 부록 -->
+<div class="chapter" id="appendix">
+  <div class="chap-cover with-banner">
+    <img class="chap-banner" src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&w=1400&q=80" alt="목회 도서관">
+    <div class="image-caption">— 언제든 꺼내 쓸 수 있는 프롬프트 보물상자 —</div>
+    <div class="badge" style="background:#455A64;">부  록</div>
+    <h1 style="color:#37474F;">프롬프트 50선 / 용어 사전 / AI 목회자 10계명</h1>
+  </div>
+  <div class="app-h2">A. 성경 원어 연구 프롬프트 10선</div>
+  <p style="color:#546E7A;font-style:italic;font-size:11pt;margin-bottom:6px;">※ [ ] 안의 내용을 본인 상황에 맞게 바꾸세요.</p>
+  <div class="app-box"><ol class="nl">
+    <li><span class="cmd">01</span>[성경 구절]을 히브리어/헬라어 원문으로 분석해 주세요: ①단어별 음역·뜻 ②신학적 함의 ③설교 활용 포인트 2가지</li>
+    <li><span class="cmd">02</span>[히브리어/헬라어 단어]가 성경 전체에서 어떻게 쓰이는지 중요 구절 5개와 뉘앙스 차이를 정리해 주세요.</li>
+    <li><span class="cmd">03</span>[성경 구절]을 주요 번역본(개역개정·새번역·NIV·ESV)으로 비교하고, 원문에 가장 가까운 번역과 이유를 알려 주세요.</li>
+    <li><span class="cmd">04</span>[난해 구절]이 왜 논쟁적인지 설명하고, 주요 해석 3가지와 목회자 권장 설명 방식을 알려 주세요.</li>
+    <li><span class="cmd">05</span>[성경 본문] 단락을 주해해 주세요: ①단락 구조 ②핵심 단어 원어 분석 ③신학적 의미 ④설교 클라이맥스</li>
+    <li><span class="cmd">06</span>[성경 신학 주제]를 구약→신약→계시록 순서로 추적하고, 4주 시리즈 설교 개요를 제안해 주세요.</li>
+    <li><span class="cmd">07</span>[성경 구절]에 대한 [칼뱅/아르미니우스] 해석을 비교하고, 각 입장의 근거 구절을 정리해 주세요.</li>
+    <li><span class="cmd">08</span>[성경 인물]의 이야기에서 원어 분석, 역사적 맥락, 신학적 의미, 설교 적용을 단계적으로 분석해 주세요.</li>
+    <li><span class="cmd">09</span>[성경 책]의 저자, 기록 연대, 수신자, 주제, 신학적 공헌을 설교 준비용으로 요약해 주세요.</li>
+    <li><span class="cmd">10</span>[성경 구절]로 강해설교 풀 패키지: ①원어 분석 ②주해 ③설교 개요 ④예화 2개 ⑤초청 문구+기도문에시</li>
+  </ol></div>
+
+  <div class="app-h2">B. 설교 준비 10선 / C. 심방·상담 10선</div>
+  <div class="app-box"><ol class="nl">
+    <li><span class="cmd">B01</span>[성경 본문]의 역사적·문화적 배경을 ①배경 ②인물 ③복음 메시지 ④현대 적용 순서로 정리해 주세요.</li>
+    <li><span class="cmd">B02</span>[성경 본문]으로 [청중 특성] 대상의 40분 설교 개요를 [A/B/C 구조]로 만들어 주세요.</li>
+    <li><span class="cmd">B03</span>[설교 주제]에 공감할 예화를 [어르신/직장인/청년]에 맞게 각 1개씩 4-5문장으로 만들어 주세요.</li>
+    <li><span class="cmd">B04</span>[설교 주제]로 서론을 2가지 스타일(시사 뉴스/일상 이야기)로 각 200자씩 써 주세요.</li>
+    <li><span class="cmd">B05</span>[성경 본문]으로 [연령대] 어린이/청소년을 위한 [N분] 설교 완성본을 만들어 주세요.</li>
+    <li><span class="cmd">C01</span>[상황(암투병/사별/취업실패)] 성도를 위한 위로 구절 3개와 이유를 알려 주세요.</li>
+    <li><span class="cmd">C02</span>[상황] 심방 패키지: ①말씀 묵상(3분) ②기도문(1분30초) ③하지 말 말 5가지를 만들어 주세요.</li>
+    <li><span class="cmd">C03</span>[상황] 가정 상담 준비: ①성경적 원리 ②상담 질문 5개 ③전문 연계 신호를 정리해 주세요.</li>
+    <li><span class="cmd">C04</span>[심방 대상] 성도를 위한 6개월 돌봄 계획(월별)을 만들어 주세요.</li>
+    <li><span class="cmd">C05</span>[연령/상황] 성도에게 건넬 격려 문장 5개를 실제 대화에서 쓸 수 있는 형태로 만들어 주세요.</li>
+  </ol></div>
+
+  <div class="app-h2">D. 행정·SNS 10선 / E. 노트북LM 10선</div>
+  <div class="app-box"><ol class="nl">
+    <li><span class="cmd">D01</span>이번 주 주보 인사말을 [절기/주제/행사] 반영해서 [150자] 이내로 써 주세요.</li>
+    <li><span class="cmd">D02</span>[행사] 안내 광고를 친근하고 명확하게 2-3문장으로 써 주세요.</li>
+    <li><span class="cmd">D03</span>[수신자]에게 보낼 [목적] 공식 서신을 격식 있되 따뜻하게 A4 반 장으로 작성해 주세요.</li>
+    <li><span class="cmd">D04</span>[설교 주제/본문]으로 인스타그램 카드뉴스 5장 내용, 캡션(200자, 이모지), 해시태그 10개를 만들어 주세요.</li>
+    <li><span class="cmd">D05</span>설교 영상 유튜브 제목 5개, 설명문(300자), 태그 12개, 고정 댓글 문구를 만들어 주세요.</li>
+    <li><span class="cmd">E01</span>업로드된 설교 N편의 공통 주제, 자주 쓰는 키워드, 설교 스타일을 분석해 주세요.</li>
+    <li><span class="cmd">E02</span>[주제]를 다룬 설교를 모두 찾아 제목·날짜·핵심 요점 목록으로 만들어 주세요.</li>
+    <li><span class="cmd">E03</span>이 설교 원고를 소그룹 성경 공부 Study Guide로 변환해 주세요.</li>
+    <li><span class="cmd">E04</span>업로드된 자료를 10분짜리 팟캐스트 대본으로 요약해 주세요.</li>
+    <li><span class="cmd">E05</span>올해 사역 보고서를 바탕으로 내년도 사역 우선순위 5가지를 제안해 주세요.</li>
+  </ol></div>
+
+  <hr class="d">
+  <div class="app-h2">F. AI 도구 용어 사전</div>
+  <div class="app-box"><ul class="bl">
+    <li><strong>Gemini (제미나이)</strong>: Google의 대화형 AI — 범용 AI 비서</li>
+    <li><strong>NotebookLM (노트북LM)</strong>: Google의 문서 분석 특화 AI — 내가 올린 자료만 분석</li>
+    <li><strong>프롬프트 (Prompt)</strong>: AI에게 주는 지시·질문 문장</li>
+    <li><strong>Gems</strong>: Gemini Advanced에서 만드는 맞춤형 AI 비서 설정</li>
+    <li><strong>Gemini 2.5 Pro</strong>: 가장 강력한 추론 모델 — 원어 분석·신학 연구에 최적</li>
+    <li><strong>Gemini 2.5 Flash</strong>: 빠른 속도와 품질의 균형 모델 — 설교 준비·행정에 최적</li>
+    <li><strong>Deep Research</strong>: 다수의 웹 자료를 자동 검색·종합하여 리포트 생성</li>
+    <li><strong>Gemini Live</strong>: 실시간 음성 대화 AI 기능</li>
+    <li><strong>오디오 개요 (Audio Overview)</strong>: 노트북LM이 자료를 팟캐스트 대화로 만드는 기능</li>
+    <li><strong>슬라이드 (Slides)</strong>: 노트북LM이 자료를 Google Slides로 자동 변환하는 기능</li>
+    <li><strong>인포그래픽 (Infographic)</strong>: 노트북LM이 핵심 내용을 시각적 요약 이미지로 생성</li>
+    <li><strong>AI 환각 (Hallucination)</strong>: AI가 틀린 내용을 자신 있게 말하는 현상 — 성경 구절은 반드시 직접 확인</li>
+  </ul></div>
+
+  <hr class="d">
+  <div class="app-h2">G. AI 목회자 10계명</div>
+  <div class="app-box"><ol class="nl">
+    <li>설교 초안은 반드시 기도로 검토하고 영적으로 승인한 후 강단에 세운다.</li>
+    <li>성도의 실명·주소·민감한 개인 정보는 절대 AI에 입력하지 않는다.</li>
+    <li>AI가 제공한 성경 구절과 인용은 반드시 직접 성경에서 확인한다.</li>
+    <li>AI가 쓴 글을 그대로 발표하지 않고 목회자 본인의 언어로 다듬는다.</li>
+    <li>AI 활용 시간이 늘어도 기도 시간은 줄어들지 않도록 한다.</li>
+    <li>신학적으로 민감한 내용은 교단 기준으로 반드시 재검토한다.</li>
+    <li>성도들에게 AI 활용 사실을 필요 시 솔직하게 안내한다.</li>
+    <li>AI는 심방·상담·기도의 인격적 관계를 대체하지 않는다.-목회는 관계이다.기도는 관계이다.</li>
+    <li>AI 결과물은 시작점이지 완성품이 아님을 항상 기억한다.</li>
+    <li>AI를 통해 절약한 시간을 성도와의 깊은 교제와 말씀 묵상에 사용한다.</li>
+  </ol></div>
+
+  <div class="closing">
+    <h2>주님의 은혜가 사역 위에 늘 함께하기를</h2>
+    <p>이 교재가 AI를 넘어 사람을 섬기는 더 나은 목회자가 되는 도구가 되기를 기도합니다.</p>
+    <p style="margin-top:12px;font-size:11pt;opacity:.85;">
+      저자: 오경근 박사 | 서일대학교 AI융합학과 교수/ "AI와 기독교윤리 100문100답<오경근>6월 출판,교보문고 퍼플"<br>
+      goodseed AI 연구소 | 2026
+    </p>
+  </div>
+</div>
+
+</div><!-- /#book -->
+
+<script>
+// 사이드바 활성 메뉴 자동 하이라이트
+const links = document.querySelectorAll('#sidebar a');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const id = e.target.id;
+      links.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`#sidebar a[href="#${id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { threshold: 0.2 });
+document.querySelectorAll('[id]').forEach(el => observer.observe(el));
+
+// 모바일에서 링크 클릭 시 사이드바 자동 닫기
+document.querySelectorAll('#sidebar a').forEach(a => {
+  a.addEventListener('click', () => {
+    if (window.innerWidth < 1100) document.getElementById('sidebar').classList.remove('open');
+  });
+});
+</script>
+</body></html>
